@@ -6,7 +6,7 @@ _Learn about the person you're helping. Update this as you go._
 - **What to call them:** sếp
 - **Pronouns:** _(optional)_
 - **Timezone:** Asia/Taipei (UTC+8)
-- **Notes:** Ưu tiên mọi lịch hẹn theo giờ Đài Loan từ 2026-03-06 trở đi. Có nhắc việc kiểm định xe vào thứ 6 hằng tuần (đợt tháng 7/2026) cho đến khi báo đã xong.
+- **Notes:** Ưu tiên mọi lịch hẹn theo giờ Đài Loan từ 2026-03-06 trở đi. Nhắc kiểm định xe tháng 7/2026 đã được đánh dấu hoàn tất khi user báo đã xong.
 
 ## Context
 
