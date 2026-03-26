@@ -1,0 +1,6 @@
+{
+  "summary": "Sự kiện test",
+  "start": {"dateTime": "2026-03-26T19:00:00+08:00"},
+  "end": {"dateTime": "2026-03-26T20:00:00+08:00"},
+  "timeZone": "Asia/Taipei"
+}
