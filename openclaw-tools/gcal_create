@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "${HOME}/bin/openclaw-tools/_oc_common.sh"
+
+require_cmd "$GOG_BIN"
+
+show_help() {
+  cat <<'HELP'
+Usage:
+  gcal_create --summary "TITLE" --from "RFC3339" --to "RFC3339" [options]
+
+Required:
+  --summary       Event title
+  --from          Start time in RFC3339, e.g. 2026-03-26T14:00:00+08:00
+  --to            End time in RFC3339, e.g. 2026-03-26T15:00:00+08:00
+
+Optional:
+  --calendar      Calendar ID (default: primary)
+  --description   Event description
+  --location      Event location
+  --help          Show this help
+
+Example:
+  gcal_create \
+    --summary "Hop team" \
+    --from "2026-03-26T14:00:00+08:00" \
+    --to "2026-03-26T15:00:00+08:00" \
+    --description "Review cong viec" \
+    --location "Google Meet"
+HELP
+}
+
+CAL_ID="${DEFAULT_CALENDAR_ID:-primary}"
+SUMMARY=""
+FROM_TS=""
+TO_TS=""
+DESCRIPTION=""
+LOCATION=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --calendar)
+      CAL_ID="${2:-}"; shift 2 ;;
+    --summary)
+      SUMMARY="${2:-}"; shift 2 ;;
+    --from)
+      FROM_TS="${2:-}"; shift 2 ;;
+    --to)
+      TO_TS="${2:-}"; shift 2 ;;
+    --description)
+      DESCRIPTION="${2:-}"; shift 2 ;;
+    --location)
+      LOCATION="${2:-}"; shift 2 ;;
+    --help|-h)
+      show_help; exit 0 ;;
+    *)
+      die "unknown argument: $1" ;;
+  esac
+done
+
+validate_nonempty "summary" "$SUMMARY"
+validate_nonempty "from" "$FROM_TS"
+validate_nonempty "to" "$TO_TS"
+validate_rfc3339 "$FROM_TS"
+validate_rfc3339 "$TO_TS"
+
+cmd=(
+  "$GOG_BIN" calendar create "$CAL_ID"
+  --summary "$SUMMARY"
+  --from "$FROM_TS"
+  --to "$TO_TS"
+)
+
+[[ -n "$DESCRIPTION" ]] && cmd+=(--description "$DESCRIPTION")
+[[ -n "$LOCATION" ]] && cmd+=(--location "$LOCATION")
+
+run_cmd "${cmd[@]}"

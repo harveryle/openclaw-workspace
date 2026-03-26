@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "${HOME}/bin/openclaw-tools/_oc_common.sh"
+
+require_cmd "$GOG_BIN"
+
+show_help() {
+  cat <<'HELP'
+Usage:
+  gsheet_append_safe --sheet-id "ID" --range "Sheet1!A:D" --values-file "/path/row.json"
+
+Required:
+  --sheet-id      Spreadsheet ID
+  --range         Range name, e.g. Sheet1!A:D
+  --values-file   Path to JSON file
+
+Optional:
+  --help          Show this help
+
+Example values file:
+  [["2026-03-25","Lunch","-120","TWD"]]
+HELP
+}
+
+SHEET_ID="${DEFAULT_SHEET_ID:-}"
+RANGE_NAME="${DEFAULT_SHEET_RANGE:-Sheet1!A:Z}"
+VALUES_FILE=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --sheet-id)
+      SHEET_ID="${2:-}"; shift 2 ;;
+    --range)
+      RANGE_NAME="${2:-}"; shift 2 ;;
+    --values-file)
+      VALUES_FILE="${2:-}"; shift 2 ;;
+    --help|-h)
+      show_help; exit 0 ;;
+    *)
+      die "unknown argument: $1" ;;
+  esac
+done
+
+validate_nonempty "sheet_id" "$SHEET_ID"
+validate_nonempty "range" "$RANGE_NAME"
+validate_nonempty "values_file" "$VALUES_FILE"
+require_file "$VALUES_FILE"
+
+run_cmd "$GOG_BIN" sheets append "$SHEET_ID" \
+  --range "$RANGE_NAME" \
+  --values-file "$VALUES_FILE"

@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "${HOME}/bin/openclaw-tools/_oc_common.sh"
+
+require_cmd "$GOG_BIN"
+
+show_help() {
+  cat <<'HELP'
+Usage:
+  gmail_send_safe --to "EMAIL" --subject "TEXT" --body-file "/path/body.txt"
+
+Required:
+  --to          Recipient email
+  --subject     Email subject
+  --body-file   Path to plain text body file
+
+Optional:
+  --help        Show this help
+
+Notes:
+  This wrapper assumes gog supports:
+    gog gmail send --to ... --subject ... --body-file ...
+  If your gog version differs, only this wrapper needs adjustment.
+HELP
+}
+
+TO_ADDR=""
+SUBJECT=""
+BODY_FILE=""
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --to)
+      TO_ADDR="${2:-}"; shift 2 ;;
+    --subject)
+      SUBJECT="${2:-}"; shift 2 ;;
+    --body-file)
+      BODY_FILE="${2:-}"; shift 2 ;;
+    --help|-h)
+      show_help; exit 0 ;;
+    *)
+      die "unknown argument: $1" ;;
+  esac
+done
+
+validate_nonempty "to" "$TO_ADDR"
+validate_nonempty "subject" "$SUBJECT"
+validate_nonempty "body_file" "$BODY_FILE"
+require_file "$BODY_FILE"
+
+run_cmd "$GOG_BIN" gmail send \
+  --to "$TO_ADDR" \
+  --subject "$SUBJECT" \
+  --body-file "$BODY_FILE"

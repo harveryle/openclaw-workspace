@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "${HOME}/bin/openclaw-tools/_oc_common.sh"
+
+require_cmd "$GOG_BIN"
+
+show_help() {
+  cat <<'HELP'
+Usage:
+  gcal_list [options]
+
+Optional:
+  --calendar   Calendar ID (default: primary)
+  --help       Show this help
+
+Example:
+  gcal_list
+  gcal_list --calendar primary
+HELP
+}
+
+CAL_ID="${DEFAULT_CALENDAR_ID:-primary}"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --calendar)
+      CAL_ID="${2:-}"; shift 2 ;;
+    --help|-h)
+      show_help; exit 0 ;;
+    *)
+      die "unknown argument: $1" ;;
+  esac
+done
+
+run_cmd "$GOG_BIN" calendar list "$CAL_ID"

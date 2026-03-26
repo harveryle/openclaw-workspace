@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+source "${HOME}/bin/openclaw-tools/_oc_common.sh"
+
+require_cmd "$GOG_BIN"
+
+show_help() {
+  cat <<'HELP'
+Usage:
+  gmail_read --query "GMAIL_QUERY" [options]
+
+Required:
+  --query       Gmail search query
+
+Optional:
+  --limit       Max results (default from config, usually 10)
+  --help        Show this help
+
+Example:
+  gmail_read --query 'from:boss@example.com newer_than:7d' --limit 5
+HELP
+}
+
+QUERY=""
+LIMIT="${DEFAULT_GMAIL_LIMIT:-10}"
+
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --query)
+      QUERY="${2:-}"; shift 2 ;;
+    --limit)
+      LIMIT="${2:-}"; shift 2 ;;
+    --help|-h)
+      show_help; exit 0 ;;
+    *)
+      die "unknown argument: $1" ;;
+  esac
+done
+
+validate_nonempty "query" "$QUERY"
+
+run_cmd "$GOG_BIN" gmail list \
+  --query "$QUERY" \
+  --limit "$LIMIT"
